@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YT Downloader</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="header">
+    <div>
+      <div class="logo">YT DOWN</div>
+    </div>
+    <div class="header-right">
+      <div class="tagline">▸ <span>video</span> + <span>audio</span> downloader<br>powered by yt-dlp // up to 4K</div>
+    </div>
+  </div>
+
+  <div class="input-section">
+    <label class="url-label">▸ YouTube URL</label>
+    <div class="url-row">
+      <input class="url-input" type="text" id="urlInput"
+        placeholder="https://www.youtube.com/watch?v=..." autocomplete="off" spellcheck="false"/>
+      <button class="paste-btn" onclick="pasteURL()">Paste</button>
+    </div>
+  </div>
+
+  <button class="fetch-btn" id="fetchBtn" onclick="fetchInfo()">FETCH VIDEO INFO</button>
+
+  <div class="status-bar" id="statusBar"></div>
+
+  <div class="video-card" id="videoCard">
+
+    <div class="video-meta">
+      <div class="thumb-wrap">
+        <img id="thumbImg" src="" alt="">
+      </div>
+      <div class="video-info">
+        <div class="video-title" id="videoTitle">—</div>
+        <div class="video-details" id="videoDetails">—</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-video" onclick="switchTab('video')">
+        <span class="tab-icon">▣</span> Video Download
+      </button>
+      <button class="tab-btn" id="tab-audio" onclick="switchTab('audio')">
+        <span class="tab-icon">♪</span> Audio Only
+      </button>
+    </div>
+
+    <div class="tab-panel active" id="panel-video">
+
+      <div class="panel-layout">
+        <div class="sidebar" id="videoSidebar">
+          <span class="sidebar-section-label">▸ Video Container</span>
+
+          <button class="sidebar-item selected" data-vfmt="mp4" onclick="selectVideoFmt(this)">
+            <span class="fmt-name">MP4</span>
+            <span class="fmt-tag compat">COMPAT</span>
+            <span class="fmt-sub">H.264</span>
+          </button>
+
+          <button class="sidebar-item" data-vfmt="mkv" onclick="selectVideoFmt(this)">
+            <span class="fmt-name">MKV</span>
+            <span class="fmt-tag hq">HQ</span>
+            <span class="fmt-sub">VP9/AV1</span>
+          </button>
+
+          <button class="sidebar-item" data-vfmt="webm" onclick="selectVideoFmt(this)">
+            <span class="fmt-name">WEBM</span>
+            <span class="fmt-tag small">WEB</span>
+            <span class="fmt-sub">VP9</span>
+          </button>
+
+          <button class="sidebar-item" data-vfmt="av1-mkv" onclick="selectVideoFmt(this)">
+            <span class="fmt-name">AV1</span>
+            <span class="fmt-tag new">NEW</span>
+            <span class="fmt-sub">MKV</span>
+          </button>
+
+          <div class="sidebar-divider"></div>
+          <span class="sidebar-section-label">▸ Forced Codec</span>
+
+          <button class="sidebar-item" data-vfmt="h264-mp4" onclick="selectVideoFmt(this)">
+            <span class="fmt-name">H.264</span>
+            <span class="fmt-tag compat">TV</span>
+            <span class="fmt-sub">avc1</span>
+          </button>
+
+          <button class="sidebar-item" data-vfmt="vp9-webm" onclick="selectVideoFmt(this)">
+            <span class="fmt-name">VP9</span>
+            <span class="fmt-tag hq">OPEN</span>
+            <span class="fmt-sub">webm</span>
+          </button>
+
+          <button class="sidebar-item" data-vfmt="hevc-mkv" onclick="selectVideoFmt(this)">
+            <span class="fmt-name">H.265</span>
+            <span class="fmt-tag new">HEVC</span>
+            <span class="fmt-sub">mkv</span>
+          </button>
+        </div>
+
+        <div class="info-panel" id="videoInfoPanel">
+        </div>
+      </div>
+
+      <div class="quality-section">
+        <div class="quality-label">▸ Resolution</div>
+        <div class="quality-grid" id="qualityGrid"></div>
+      </div>
+
+      <div class="action-row">
+        <button class="dl-btn disabled" id="dlBtn" onclick="startVideoDownload()">GENERATE COMMAND</button>
+      </div>
+
+    </div>
+
+    <div class="tab-panel" id="panel-audio">
+
+      <div class="panel-layout">
+        <div class="sidebar" id="audioSidebar">
+          <span class="sidebar-section-label">▸ Audio Format</span>
+
+          <button class="sidebar-item selected" data-afmt="mp3" onclick="selectAudioFmt(this)">
+            <span class="fmt-name">MP3</span>
+            <span class="fmt-tag popular">POPULAR</span>
+          </button>
+
+          <button class="sidebar-item" data-afmt="opus" onclick="selectAudioFmt(this)">
+            <span class="fmt-name">OPUS</span>
+            <span class="fmt-tag hq">HQ</span>
+          </button>
+
+          <button class="sidebar-item" data-afmt="aac" onclick="selectAudioFmt(this)">
+            <span class="fmt-name">AAC</span>
+            <span class="fmt-tag compat">COMPAT</span>
+          </button>
+
+          <button class="sidebar-item" data-afmt="flac" onclick="selectAudioFmt(this)">
+            <span class="fmt-name">FLAC</span>
+            <span class="fmt-tag hq">LOSSLESS</span>
+          </button>
+
+          <button class="sidebar-item" data-afmt="wav" onclick="selectAudioFmt(this)">
+            <span class="fmt-name">WAV</span>
+            <span class="fmt-tag small">RAW</span>
+          </button>
+
+          <button class="sidebar-item" data-afmt="m4a" onclick="selectAudioFmt(this)">
+            <span class="fmt-name">M4A</span>
+            <span class="fmt-tag compat">APPLE</span>
+          </button>
+
+          <button class="sidebar-item" data-afmt="vorbis" onclick="selectAudioFmt(this)">
+            <span class="fmt-name">VORBIS</span>
+            <span class="fmt-tag hq">OGG</span>
+          </button>
+
+          <button class="sidebar-item" data-afmt="alac" onclick="selectAudioFmt(this)">
+            <span class="fmt-name">ALAC</span>
+            <span class="fmt-tag new">LOSSLESS</span>
+          </button>
+        </div>
+
+        <div class="info-panel" id="audioInfoPanel">
+        </div>
+      </div>
+
+      <div class="quality-section" id="bitrateSection">
+        <div class="quality-label">▸ Quality / Bitrate</div>
+        <div class="bitrate-grid" id="bitrateGrid"></div>
+      </div>
+
+      <div class="action-row">
+        <button class="dl-btn disabled" id="audioDlBtn" onclick="startAudioDownload()">GENERATE COMMAND</button>
+      </div>
+
+    </div>
+
+    <div class="cmd-wrap" id="cmdWrap">
+      <div class="cmd-bar">
+        <span class="cmd-bar-label" id="cmdLabel">▸ terminal command</span>
+        <button class="cmd-copy-btn" id="cmdCopyBtn" onclick="copyCmd()">Copy</button>
+      </div>
+      <div class="cmd-box" id="cmdBox" onclick="copyCmd()"></div>
+    </div>
+
+  </div>
+
+  <div class="notice">
+    <strong>HOW THIS WORKS</strong><br>
+    This tool uses <strong>yt-dlp</strong> under the hood — a powerful open-source downloader.<br>
+    Since browsers can't run yt-dlp directly, clicking Generate Command builds a ready-to-run<br>
+    terminal command. Paste it in your terminal to download the selected format locally.<br><br>
+    Install yt-dlp: <strong>pip install yt-dlp</strong> &nbsp;|&nbsp; or: <strong>brew install yt-dlp</strong>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
